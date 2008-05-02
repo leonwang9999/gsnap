@@ -127,91 +127,7 @@
 		return Open();
 	}
 
-	// Post data to server
-	// url indicates the relative path to the server, "/foo.asp"
-//DEL 	int CMyHttps::Post(CString &request, CString &url, CString &response)
-//DEL 	{
-//DEL 		if(!m_pConnection)
-//DEL 			return FALSE;
-//DEL 
-//DEL 		CHttpFile *pFile = NULL;
-//DEL 		try
-//DEL 		{
-//DEL 			DWORD dwFlags = GetInternetFlag();
-//DEL 
-//DEL 			pFile = m_pConnection->OpenRequest(CHttpConnection::HTTP_VERB_POST,
-//DEL 				url, NULL, 1, NULL,	NULL, dwFlags);
-//DEL 
-//DEL 			if(pFile)
-//DEL 			{
-//DEL 				pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded;"));
-//DEL 				BOOL bRequestOK = pFile->SendRequest(NULL, 0, 
-//DEL 					(LPVOID)(LPTSTR)(request.GetBuffer(0)),
-//DEL 					request.GetLength());
-//DEL 				request.ReleaseBuffer();
-//DEL 
-//DEL 				if(!bRequestOK)
-//DEL 				{
-//DEL 					pFile->Close();
-//DEL 					delete pFile;
-//DEL 					return FALSE;
-//DEL 				}
-//DEL 
-//DEL 				// Status Code
-//DEL 				pFile->QueryInfoStatusCode(m_dwStatusCode);
-//DEL 				if(m_dwStatusCode != 200)
-//DEL 				{
-//DEL 					pFile->Close();
-//DEL 					delete pFile;
-//DEL 					return FALSE;
-//DEL 				}
-//DEL 
-//DEL 				// get the size of Content-Length
-//DEL 				CString strContentLength;
-//DEL 				pFile->QueryInfo(HTTP_QUERY_CONTENT_LENGTH, strContentLength);
-//DEL 				int nContentLength = _ttoi(strContentLength);
-//DEL 
-//DEL 				UINT nReadCount = 0;
-//DEL 
-//DEL 				int HTTP_READ_BUFFER_SIZE = nContentLength > 0 ? nContentLength : 4096;
-//DEL 				TCHAR * szBuf = new TCHAR[HTTP_READ_BUFFER_SIZE+1];
-//DEL 				memset(szBuf, 0, HTTP_READ_BUFFER_SIZE+1);
-//DEL 
-//DEL 				response.Empty();
-//DEL 
-//DEL 				while(true)
-//DEL 				{
-//DEL 					memset(szBuf,0,HTTP_READ_BUFFER_SIZE+1);
-//DEL 					// nReadCount = pFile->Read(szBuf,HTTP_READ_BUFFER_SIZE);
-//DEL 					nReadCount = pFile->Read(szBuf,
-//DEL 						(pFile->GetLength() < HTTP_READ_BUFFER_SIZE) ? pFile->GetLength() : HTTP_READ_BUFFER_SIZE);
-//DEL 
-//DEL 					if(nReadCount <= 0)
-//DEL 					{
-//DEL 						break;
-//DEL 					}
-//DEL 
-//DEL 					response += szBuf;
-//DEL 				}
-//DEL 
-//DEL 				response += szBuf;
-//DEL 				delete []szBuf;
-//DEL 
-//DEL 				pFile->Close();
-//DEL 				delete pFile;
-//DEL 			}
-//DEL 		}
-//DEL 		catch(CInternetException * e)
-//DEL 		{
-//DEL 			// e->ReportError();
-//DEL 			pFile->Close();
-//DEL 			delete pFile;
-//DEL 			e->Delete();
-//DEL 			return FALSE;
-//DEL 		}
-//DEL 
-//DEL 		return TRUE;
-//DEL 	}
+	
 
 	// Post data to server
 	// url indicates the relative path to the server, "/foo.asp"
@@ -338,14 +254,6 @@
 				,NULL, 1, NULL,	NULL,
 				dwFlags);
 
-// 			INTERNET_PROXY_INFO   proxyinfo;   
-// 			proxyinfo.dwAccessType   =   INTERNET_OPEN_TYPE_PROXY;   
-// 			proxyinfo.lpszProxy   =   "119.119.119.9:8080";   
-// 			proxyinfo.lpszProxyBypass   =   NULL;   
-// 
-// 			BOOL xxx=	m_pConnection->SetOption(INTERNET_OPTION_PROXY,   (LPVOID)&proxyinfo,   sizeof(INTERNET_PROXY_INFO));   
-// 			//pFile->SetOption(INTERNET_OPTION_PROXY_USERNAME,   strUsername,   strlen(strUsername)+1);   
-			//pFile->SetOption(INTERNET_OPTION_PROXY_PASSWORD,   strPassword,   strlen(strPassword)+1);  
 
 			if(pFile)
 			{

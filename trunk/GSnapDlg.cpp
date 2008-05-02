@@ -123,14 +123,14 @@ BOOL CGSnapDlg::OnInitDialog()
 
 	ModifyStyleEx(WS_EX_APPWINDOW,WS_EX_TOOLWINDOW);   
 
-	// 隐藏   
+	// Hide main dialog
 	WINDOWPLACEMENT wp;   
 	wp.length = sizeof(WINDOWPLACEMENT);   
 	wp.flags = WPF_RESTORETOMAXIMIZED;   
 	wp.showCmd = SW_HIDE;   
 	SetWindowPlacement(&wp); 
 	
-	// 到托盘
+	// Hide app to tray
 	ToTray();
 
 	GetServerInfo();
@@ -338,7 +338,7 @@ BOOL CGSnapDlg::CaptureRegion()
 	return TRUE;
 }
 
-// wParam接收的是图标的ID，而lParam接收的是鼠标的行为
+
 LRESULT CGSnapDlg::OnShowTask(WPARAM wParam, LPARAM lParam)
 {
 	if(wParam != IDR_MAINFRAME)
@@ -346,7 +346,7 @@ LRESULT CGSnapDlg::OnShowTask(WPARAM wParam, LPARAM lParam)
 
 	switch(lParam)
 	{
-		// 右键起来时弹出快捷菜单，这里只有一个“关闭”
+		// right click
 		case WM_RBUTTONUP:				
 		{ 
 			CPoint point;
@@ -362,17 +362,17 @@ LRESULT CGSnapDlg::OnShowTask(WPARAM wParam, LPARAM lParam)
 
 			if (nRet == IDM_EXIT)
 			{
-				// 将图标从托盘中删除
+				// remove icon from tray
 				NOTIFYICONDATA nid;
 				nid.cbSize = (DWORD)sizeof(NOTIFYICONDATA);
 				nid.hWnd = this->m_hWnd;
 				nid.uID = IDR_MAINFRAME;
 				nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP ;
-				nid.uCallbackMessage = WM_SHOWTASK;		// 自定义的消息名称
+				nid.uCallbackMessage = WM_SHOWTASK;		// custom message
 				nid.hIcon = LoadIcon(AfxGetInstanceHandle(), 
 					MAKEINTRESOURCE(IDR_MAINFRAME));
-				strcpy(nid.szTip, _T("GSnap"));		// 信息提示条为“显示系统运行时间”
-				Shell_NotifyIcon(NIM_DELETE, &nid);		// 在托盘区添加图标
+				strcpy(nid.szTip, _T("GSnap"));
+				Shell_NotifyIcon(NIM_DELETE, &nid);
 
 				EndDialog(0);
 			}
@@ -404,12 +404,12 @@ void CGSnapDlg::ToTray()
 	nid.hWnd = this->m_hWnd;
 	nid.uID = IDR_MAINFRAME;
 	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP ;
-	nid.uCallbackMessage = WM_SHOWTASK;		// 自定义的消息名称
+	nid.uCallbackMessage = WM_SHOWTASK;		// custom message
 	nid.hIcon = LoadIcon(AfxGetInstanceHandle(),
 		MAKEINTRESOURCE(IDR_MAINFRAME));
-	strcpy(nid.szTip, _T("GSnap"));			// 信息提示条为“GSnap”
-	Shell_NotifyIcon(NIM_ADD, &nid);		// 在托盘区添加图标
-	ShowWindow(SW_HIDE);					// 隐藏主窗口
+	strcpy(nid.szTip, _T("GSnap"));			// tips
+	Shell_NotifyIcon(NIM_ADD, &nid);		// add icon to tray
+	ShowWindow(SW_HIDE);					// hide main window
 } 
 
 
@@ -440,116 +440,7 @@ DWORD CGSnapDlg::GetTalk()
 
 void CGSnapDlg::Test()
 {
-/*
-	HWND hTalk = NULL;
 
-	hTalk = ::FindWindow("Chat View", NULL);
-	//hTalk = ::FindWindow("Notepad", NULL);
-	CWnd *p = FromHandle(hTalk);
-
-
-
-
-
-	//目标窗口句柄
-	HWND TargetHwnd = hTalk;
-	CString SendFileName = _T("D:\\data.txt"); //发送时的文件名
-	int FileSize = SendFileName.GetLength() + 1 + sizeof(DROPFILES) ;
-	
-	  HDROP MemHwnd = (HDROP )GlobalAlloc(GMEM_ZEROINIT,FileSize);
-	  
-		LPDROPFILES DropFiles  = (LPDROPFILES) GlobalLock(MemHwnd);
-		
-		  DropFiles->pFiles = sizeof(DROPFILES);
-		  DropFiles->pt.x = 0;
-		  DropFiles->pt.y = 0;
-		  DropFiles->fNC =FALSE;
-		  DropFiles->fWide =FALSE;
-		  
-			char *SendChar =(char *)DropFiles;
-			SendChar += sizeof(DROPFILES);
-			strcpy(SendChar, SendFileName);
-			SendChar += SendFileName.GetLength() + 1;
-			*SendChar = '\0';
-			GlobalUnlock(MemHwnd);
-			//发送WM_DROPFILES消息
-			::PostMessage(TargetHwnd,WM_DROPFILES,LPARAM(MemHwnd),0);
-			
-			  
-
-
-/////
-
-char szFile[] = "d:\\data.txt";
-DWORD dwBufSize = sizeof(DROPFILES) + sizeof(szFile) + 1;
-BYTE *pBuf = NULL;
-LPSTR pszRemote = NULL;
-HANDLE hProcess = NULL;
-
-	pBuf = new BYTE[dwBufSize];
-	//if(pBuf == NULL) __leave;
-	
-	memset(pBuf, 0, dwBufSize);
-	DROPFILES *pDrop = (DROPFILES *)pBuf;
-	pDrop->pFiles = sizeof(DROPFILES);
-	strcpy((char *)(pBuf + sizeof(DROPFILES)), szFile);
-	
-	DWORD dwProcessId;
-	GetWindowThreadProcessId(hTalk, &dwProcessId);
-	
-	hProcess = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, dwProcessId);
-	
-	pszRemote = (LPSTR)VirtualAllocEx(hProcess, NULL, dwBufSize, MEM_COMMIT, PAGE_READWRITE);
-	//if(pszRemote == NULL) __leave;
-	
-	if(WriteProcessMemory(hProcess, pszRemote, pBuf, dwBufSize, 0)) 
-	{
-		BOOL xxx = ::SendMessage(hTalk, WM_DROPFILES, (WPARAM)pszRemote, NULL);
-		int kkkkk;
-		kkkkk++;
-	}
-
-	if(pBuf != NULL) delete []pBuf;
-	if(pszRemote != NULL) VirtualFreeEx(hProcess, pszRemote, dwBufSize, MEM_FREE);
-	if(hProcess != NULL) CloseHandle(hProcess);
-
-
-
-
-
-
-
-
-
-
-
-
-
-	HANDLE hMemData; 
-DROPFILES *lpDropFiles; //DROPFILES结构指针 
-char *pszStart; 
-
-
-EmptyClipboard(); 
-hMemData=GlobalAlloc(GHND,sizeof(DROPFILES)+MAX_PATH); //分配指定的字节的全局内存 
-lpDropFiles=(DROPFILES*)GlobalLock(hMemData); //锁定全局对象的内存块，并返回指针 
-lpDropFiles->pFiles =sizeof(DROPFILES); //设置pFiles值为DROPFILES后的地址 
-lpDropFiles->fNC =FALSE; //设置fNC为假 
-lpDropFiles->fWide =FALSE; //设置fWide为假 
-
-pszStart = (char*)((LPBYTE)lpDropFiles + sizeof(DROPFILES)); //指向DROPFILES之后的地址 
-strcpy(pszStart, "D:\\data.txt"); //拷贝fp到DROPFILES之后的地址 
-GlobalUnlock(hMemData);  //解锁hMemData 
-
-if(!OpenClipboard()) //打开剪贴板 
-return ; 
-if(!EmptyClipboard()) //清空剪贴板 
-return ; 
-SetClipboardData(CF_HDROP,lpDropFiles); //设置剪贴板数据 
-::PostMessage(hTalk,WM_DROPFILES,(WPARAM)(HDROP)hMemData,(LPARAM)0); //传递消息到窗口'h' 
-CloseClipboard(); //关闭剪贴板 
-///////	
-*/
 }
 
 BOOL CGSnapDlg::GetServerInfo()
